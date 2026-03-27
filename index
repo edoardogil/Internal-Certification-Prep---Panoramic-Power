@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panoramic Power Technical Exam | Brannelement</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,sans-serif;background:#f5f5f0;min-height:100vh;color:#1a1a1a}
+.header{background:#FF6B00;color:#fff;padding:1.25rem 2rem}
+.logo{font-size:1.3rem;font-weight:700;letter-spacing:.5px}
+.subtitle{font-size:.85rem;opacity:.85}
+.container{max-width:780px;margin:0 auto;padding:1.5rem 1rem 3rem}
+.card{background:#fff;border-radius:12px;border:1px solid #e0e0da;padding:1.5rem;margin-bottom:1rem}
+.progress-wrap{background:#fff;border-radius:12px;border:1px solid #e0e0da;padding:1rem 1.5rem;margin-bottom:1rem;display:flex;align-items:center;gap:1rem}
+.progress-bar-bg{flex:1;height:8px;background:#f0ede8;border-radius:4px;overflow:hidden}
+.progress-bar{height:100%;background:#FF6B00;border-radius:4px;transition:width .4s}
+.progress-label{font-size:.8rem;color:#888;white-space:nowrap;min-width:80px;text-align:right}
+.section-badge{display:inline-block;background:#fff3ec;color:#c44d00;border:1px solid #ffd5b8;border-radius:6px;font-size:.72rem;font-weight:600;padding:3px 8px;margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.5px}
+.q-num{font-size:.8rem;color:#999;margin-bottom:.3rem}
+.q-text{font-size:1rem;font-weight:500;line-height:1.55;margin-bottom:1rem;color:#1a1a1a}
+.options{display:flex;flex-direction:column;gap:.5rem}
+.opt{display:flex;align-items:flex-start;gap:.75rem;padding:.7rem .9rem;border-radius:8px;border:1px solid #e0e0da;cursor:pointer;transition:background .15s,border-color .15s;background:#fafaf8;font-size:.93rem;line-height:1.45;user-select:none}
+.opt:hover{background:#fff8f3;border-color:#FF6B00}
+.opt.selected{background:#fff3ec;border-color:#FF6B00}
+.opt.revealed-correct{background:#eaf7ee;border-color:#2d9e5e;color:#1a5c35;cursor:default}
+.opt.incorrect{background:#fdecea;border-color:#d94f4f;color:#7a1a1a;cursor:default}
+.opt-letter{font-weight:600;min-width:1.2rem;color:#FF6B00;font-size:.9rem;flex-shrink:0}
+.opt.revealed-correct .opt-letter{color:#2d9e5e}
+.opt.incorrect .opt-letter{color:#d94f4f}
+.explanation{margin-top:.9rem;padding:.75rem 1rem;background:#fff8f0;border-left:3px solid #FF6B00;border-radius:0 6px 6px 0;font-size:.88rem;line-height:1.55;color:#4a2e00}
+.btn{padding:.6rem 1.4rem;border-radius:8px;border:none;cursor:pointer;font-size:.9rem;font-weight:500;transition:background .15s,transform .1s}
+.btn:active{transform:scale(.98)}
+.btn-primary{background:#FF6B00;color:#fff}
+.btn-primary:hover{background:#e05a00}
+.btn-secondary{background:#f0ede8;color:#333}
+.btn-secondary:hover{background:#e3dfda}
+
+.btn:disabled{opacity:.45;cursor:default}
+.nav{display:flex;justify-content:space-between;align-items:center;margin-top:1.2rem}
+.score-circle{width:130px;height:130px;border-radius:50%;background:#FF6B00;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1rem}
+.score-num{font-size:2.4rem;font-weight:700;line-height:1}
+.score-total{font-size:.8rem;opacity:.8}
+.result-title{font-size:1.25rem;font-weight:600;margin-bottom:.4rem}
+.result-sub{color:#666;font-size:.9rem;margin-bottom:1.5rem}
+.cats{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:.6rem;margin-bottom:1.5rem}
+.cat-card{background:#fafaf8;border:1px solid #e0e0da;border-radius:8px;padding:.7rem .9rem}
+.cat-name{font-size:.75rem;color:#888;margin-bottom:.3rem}
+.cat-score{font-size:1rem;font-weight:600;color:#1a1a1a}
+.cat-bar-bg{height:5px;background:#f0ede8;border-radius:3px;margin-top:.4rem;overflow:hidden}
+.cat-bar{height:100%;background:#FF6B00;border-radius:3px}
+.tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.72rem;font-weight:600}
+.tag-pass{background:#eaf7ee;color:#2d9e5e}
+.tag-fail{background:#fdecea;color:#d94f4f}
+.start-screen{text-align:center;padding:2rem 1rem}
+.start-screen h2{font-size:1.3rem;font-weight:600;margin-bottom:.5rem}
+.start-screen p{color:#666;font-size:.9rem;margin-bottom:1.5rem;line-height:1.6}
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:.6rem;margin-bottom:1.5rem}
+.info-card{background:#fafaf8;border:1px solid #e0e0da;border-radius:8px;padding:.75rem;text-align:center}
+.info-val{font-size:1.3rem;font-weight:700;color:#FF6B00}
+.info-label{font-size:.72rem;color:#888;margin-top:2px}
+.name-input{width:100%;padding:.65rem 1rem;border-radius:8px;border:1.5px solid #e0e0da;font-size:.95rem;margin-bottom:1rem;outline:none;transition:border-color .15s}
+.name-input:focus{border-color:#FF6B00}
+.name-label{font-size:.85rem;color:#555;margin-bottom:.35rem;display:block;text-align:left}
+.result-name{font-size:1rem;color:#FF6B00;font-weight:500;margin-bottom:.25rem}
+.webhook-note{font-size:.75rem;color:#aaa;margin-top:.75rem}
+</style>
+</head>
+<body>
+<div class="header">
+  <div class="logo">Brannelement</div>
+  <div class="subtitle">Internal Certification Prep · Panoramic Power</div>
+</div>
+<div class="container" id="app"></div>
+
+<script>
+const WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbyCoNIjVrfn3FmLkkH32Lo5AXz9nz0mMmwogh_SWQAtKtFmBZO8uG1jG9vEQ8UI5mBB/exec';
+
+const RAW_QUESTIONS = [
+  {section:"Hardware & Sensors",q:"What is the maximum hot-wire outer diameter supported by the PAN-10 sensor?",opts:["0.18 inches (4.5 mm)","0.28 inches (7 mm)","0.74 inches (18.8 mm)","1.00 inches (25.4 mm)"],answer:1,exp:"The PAN-10 is designed for granular monitoring of individual circuits with a maximum hot-wire outer diameter of 0.28 inches (7 mm), measuring currents from 0 to 63 A."},
+  {section:"Hardware & Sensors",q:"What current range does the PAN-12 sensor cover?",opts:["0–63 A","0–100 A","0–225 A","0–400 A"],answer:2,exp:"The PAN-12 is designed for granular monitoring of individual circuits and devices with currents from 0 to 225 A and a maximum hot-wire diameter of 0.74 inches (18.8 mm)."},
+  {section:"Hardware & Sensors",q:"What is the primary application of the PAN-42 Power Meter compared to the PAN-10/12/14 clip-on sensors?",opts:["Small circuit monitoring only (0–63 A)","Main power line monitoring and sub-metering with higher-accuracy real-time measurements of current, voltage, and active/reactive power","Advanced power quality analysis including harmonics and transients","Residential-only electrical installations"],answer:1,exp:"The PAN-42 provides higher-accuracy real-time measurements (current, voltage, active and reactive power) suited for main power lines and sub-metering — more capable than the clip-on PAN-10/12/14. However, it is NOT an advanced power quality analyzer. It does not perform harmonic analysis, transient detection, or deep power quality diagnostics like a specialized analyzer (e.g., Hioki)."},
+  {section:"Hardware & Sensors",q:"At what transmission frequency does the US version of the PAN-42 operate?",opts:["434 MHz","915 MHz","2.4 GHz","868 MHz"],answer:1,exp:"The US version of the PAN-42 operates at 915 MHz. The EU version uses 434 MHz. Both have a maximum transmission power of 0 dBm and a transmission interval of 10 seconds."},
+  {section:"Installation & Configuration",q:"Which component acts as the gateway between the wireless sensors and the PowerRadar cloud platform?",opts:["PAN-10 Gateway","Panoramic Power Bridge Gen 4+","PowerRadar Hub","PAN-42 Router"],answer:1,exp:"The Panoramic Power Gen 4+ Bridge collects data from the wireless sensors and transmits it to the PowerRadar cloud platform for monitoring and analysis."},
+  {section:"Installation & Configuration",q:"What is the recommended first step when planning an installation at a new site?",opts:["Install the Bridge and configure the Wi-Fi network","Perform a site scope to determine how many Bridges and sensors are needed","Configure Device Groups in PowerRadar","Create automated reports"],answer:1,exp:"Site scoping is the critical first step. It determines how many Bridges and sensors are needed, which sensor models to install at each panel, and ensures optimal coverage before any physical installation begins."},
+  {section:"Installation & Configuration",q:"Which Bridge configuration is used when integration with building automation systems via a standard industrial protocol is required?",opts:["Wi-Fi mode","Modbus/Standalone mode","Bluetooth mode","Direct Ethernet mode"],answer:1,exp:"The Bridge in Modbus/Standalone mode enables integration with building management systems (BMS) and industrial automation systems using the standard Modbus protocol."},
+  {section:"PowerRadar Platform",q:"What is the main function of the Account Dashboard in PowerRadar?",opts:["Configure new PAN-10 sensors","Provide a high-level overview of all sites and their energy consumption across the account","Generate utility invoices","Update Bridge firmware"],answer:1,exp:"The Account Dashboard provides an overview of all sites linked to the account, allowing the administrator to see energy consumption status, active alerts, and key metrics across all projects."},
+  {section:"PowerRadar Platform",q:"What is the purpose of the Time View in the PowerRadar dashboard?",opts:["Show the geographic location of each sensor","Visualize energy consumption over time for trend analysis","Configure alert thresholds","Manage site user permissions"],answer:1,exp:"The Time View displays energy consumption data over time, enabling trend analysis, usage pattern identification, and detection of anomalies or waste."},
+  {section:"PowerRadar Platform",q:"Which PowerRadar dashboard view allows you to quickly see how energy flows and compares across multiple devices or circuits simultaneously?",opts:["Pulse Volumetric View","Time View","Heat Map Dashboard","Energy Flow Dashboard"],answer:3,exp:"The Energy Flow Dashboard provides a simultaneous comparative visualization of energy distribution across devices and circuits. The Heat Map, while useful, displays only one variable at a time and is not suited for quick multi-load comparative analysis."},
+  {section:"Configuration & Groups",q:"What are Device Groups in PowerRadar?",opts:["Physical sensor types grouped by manufacturer","Logical groupings of devices or circuits to simplify monitoring and analysis","User groups with different access levels","Sets of alert rules applied simultaneously"],answer:1,exp:"Device Groups are logical groupings that let you organize sensors and circuits by function, area, equipment type, or any operational criteria, enabling segmented monitoring and consumption analysis by category."},
+  {section:"Configuration & Groups",q:"Which of the following data sources can PowerRadar integrate in addition to its own electrical sensors?",opts:["Only proprietary PAN sensors","Third-party meters for gas, heat, water, and air","Only Centrica-certified meters","Nest smart thermostats"],answer:1,exp:"PowerRadar can integrate data from third-party meters including gas, heat, water, and air, enabling a complete energy view of the site beyond just electrical consumption."},
+  {section:"Alerts & Reports",q:"What does the Rules & Alerts feature in PowerRadar allow you to do?",opts:["Automatically lock the electrical panel","Configure automatic notifications when consumption exceeds defined thresholds","Remotely shut down equipment","Generate invoices for end users"],answer:1,exp:"Rules & Alerts lets you define rules based on consumption thresholds, power levels, or anomalous behavior, generating automatic notifications that enable proactive response to inefficiencies or equipment issues."},
+  {section:"Alerts & Reports",q:"What is Pulse Volumetric Data used for in PowerRadar?",opts:["Measuring Bridge signal quality","Integrating and visualizing data from pulse-output meters (water, gas, steam)","Calculating installation ROI","Updating sensor firmware"],answer:1,exp:"The Pulse Volumetric view integrates data from meters that use pulse outputs — such as water, gas, or steam meters — complementing electrical monitoring with additional energy vectors."},
+  {section:"Alerts & Reports",q:"What is a key benefit of automated reports in PowerRadar?",opts:["They schedule physical sensor maintenance","They allow sustainability and consumption KPIs to be tracked continuously without manual intervention","They only generate printable PDF reports","They fully replace the system administrator"],answer:1,exp:"Automated reports allow facility management and sustainability teams to continuously track energy KPIs, decarbonization progress, and operational efficiency without ongoing manual effort."},
+  {section:"General Concepts",q:"At what interval do Panoramic Power sensors transmit data?",opts:["Every 1 second","Every 10 seconds","Every 1 minute","Every 5 minutes"],answer:1,exp:"Panoramic Power sensors transmit data in near-real time with a 10-second interval, providing high granularity for consumption analysis and anomaly detection."},
+  {section:"General Concepts",q:"Which accuracy standard does the PAN-42 follow for voltage, current, and active energy in the US version?",opts:["IEC 61557","ANSI C12.1 (Class 1)","IEEE 1547","NEMA 4X"],answer:1,exp:"The PAN-42 meets the ANSI C12.1 (Class 1) accuracy standard for voltage, current, and active energy measurement in the US and Canada market."},
+  {section:"General Concepts",q:"How can the PowerRadar platform be accessed for full configuration tasks such as user management and metering hierarchy setup?",opts:["Only through the Android mobile app","Through any standard web browser","Only via software installed on a dedicated computer","Only via SSH access to the Bridge"],answer:1,exp:"PowerRadar is fully accessible from any standard web browser, supporting complete configuration, data exports, custom queries, user management, and metering hierarchy setup."},
+  {section:"General Concepts",q:"What operational characteristic distinguishes Panoramic Power sensors in terms of maintenance?",opts:["They require monthly on-site calibration","They are wireless, self-powered, and maintenance-free","They use batteries replaced annually","They require a manual restart after every power outage"],answer:1,exp:"Panoramic Power sensors are wireless and self-powered — they draw energy from the magnetic field of the wire being monitored — making them completely maintenance-free and significantly reducing operational costs."},
+  {section:"General Concepts",q:"What does the Panoramic Power installer/configurator certification validate?",opts:["Authorization to sell the product to end users","That the technician can plan, install, configure, and operate the energy monitoring system correctly","That the technician can manufacture PAN sensors","Knowledge of energy accounting and invoicing"],answer:1,exp:"The certification validates that the collaborator has the skills to perform site scoping, install hardware (Bridge and sensors), configure the PowerRadar platform, and operate the system to deliver energy value to the customer."}
+];
+
+const sections = [...new Set(RAW_QUESTIONS.map(q=>q.section))];
+
+let state = {screen:'start',current:0,selected:null,revealed:false,answers:[],score:0,name:'',startTime:null,qs:[]};
+
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+function shuffleQuestions(){
+  return RAW_QUESTIONS.map(q=>{
+    const indices=[0,1,2,3];
+    for(let i=3;i>0;i--){const j=Math.floor(Math.random()*(i+1));[indices[i],indices[j]]=[indices[j],indices[i]];}
+    return {...q, opts:indices.map(i=>q.opts[i]), answer:indices.indexOf(q.answer)};
+  });
+}
+
+function pct(n,t){return t===0?0:Math.round(n/t*100)}
+
+function render(){
+  const app=document.getElementById('app');
+  if(state.screen==='start') renderStart(app);
+  else if(state.screen==='exam') renderExam(app);
+  else if(state.screen==='result') renderResult(app);
+}
+
+function renderStart(app){
+  app.innerHTML=`
+  <div class="card start-screen">
+    <div class="section-badge">Brannelement · Internal Prep</div>
+    <h2>Panoramic Power<br>Technical Exam</h2>
+    <p>This simulation covers the key topics evaluated in the official certification: sensor hardware, Bridge installation, PowerRadar platform, alerts, and reports.</p>
+    <div class="info-grid">
+      <div class="info-card"><div class="info-val">${RAW_QUESTIONS.length}</div><div class="info-label">Questions</div></div>
+      <div class="info-card"><div class="info-val">${sections.length}</div><div class="info-label">Sections</div></div>
+      <div class="info-card"><div class="info-val">70%</div><div class="info-label">Passing score</div></div>
+    </div>
+    <label class="name-label" for="nameField">Your full name</label>
+    <input class="name-input" id="nameField" type="text" placeholder="e.g. María González" autocomplete="name"/>
+    <button class="btn btn-primary" onclick="startExam()" style="width:100%">Start exam</button>
+  </div>`;
+  const f=document.getElementById('nameField');
+  f.addEventListener('keydown',e=>{if(e.key==='Enter')startExam();});
+}
+
+function renderExam(app){
+  const q=state.qs[state.current];
+  const total=state.qs.length;
+  const done=state.answers.filter(a=>a!==undefined).length;
+  const letters=['A','B','C','D'];
+  const optsHTML=q.opts.map((o,i)=>{
+    let cls='opt';
+    if(state.revealed){
+      if(i===q.answer) cls+=' revealed-correct';
+      else if(i===state.selected&&i!==q.answer) cls+=' incorrect';
+    } else if(i===state.selected) cls+=' selected';
+    return `<div class="${cls}" onclick="selectOpt(${i})"><span class="opt-letter">${letters[i]}</span><span>${o}</span></div>`;
+  }).join('');
+  const expHTML=state.revealed?`<div class="explanation"><strong>Explanation:</strong> ${q.exp}</div>`:'';
+  const isLast=state.current===total-1;
+  app.innerHTML=`
+  <div class="progress-wrap">
+    <div class="progress-bar-bg"><div class="progress-bar" style="width:${pct(done,total)}%"></div></div>
+    <span class="progress-label">${done} of ${total}</span>
+  </div>
+  <div class="card">
+    <div class="section-badge">${q.section}</div>
+    <div class="q-num">Question ${state.current+1} of ${total}</div>
+    <div class="q-text">${q.q}</div>
+    <div class="options">${optsHTML}</div>
+    ${expHTML}
+    <div class="nav">
+      <div></div>
+      <div style="display:flex;gap:.6rem">
+        ${!state.revealed&&state.selected!==null?`<button class="btn btn-secondary" onclick="checkAnswer()">Check answer</button>`:''}
+        ${state.revealed?`<button class="btn btn-primary" onclick="nextQuestion()">${isLast?'See results':'Next'}</button>`:''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderResult(app){
+  const total=state.qs.length;
+  const score=state.score;
+  const p=pct(score,total);
+  const pass=p>=70;
+  const msg=p>=90?"Excellent! You are very well prepared for the certification."
+            :p>=70?"Passed! Review the lower-scoring sections before your official exam."
+            :"Keep studying — you can do it. Review the explanations and try again.";
+  const sectionScores=sections.map(s=>{
+    const qs=state.qs.map((q,i)=>({...q,idx:i})).filter(q=>q.section===s);
+    const correct=qs.filter(q=>state.answers[q.idx]===q.answer).length;
+    return {name:s,correct,total:qs.length};
+  });
+  const elapsed=state.startTime?Math.round((Date.now()-state.startTime)/60000):null;
+  const dateStr=new Date().toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'});
+  const catsHTML=sectionScores.map(s=>{
+    const sp=pct(s.correct,s.total);
+    return `<div class="cat-card"><div class="cat-name">${s.name}</div><div class="cat-score">${s.correct}/${s.total} <span style="color:#999;font-size:.8rem">(${sp}%)</span></div><div class="cat-bar-bg"><div class="cat-bar" style="width:${sp}%"></div></div></div>`;
+  }).join('');
+
+  app.innerHTML=`
+  <div class="card" id="resultCard" style="text-align:center;padding:2rem 1rem">
+    <div class="section-badge" style="margin-bottom:1rem">Brannelement · Panoramic Power Certification Prep</div>
+    ${state.name?`<div class="result-name">${state.name}</div>`:''}
+    <div style="font-size:.8rem;color:#aaa;margin-bottom:1rem">${dateStr}${elapsed?` · ${elapsed} min`:''}</div>
+    <div class="score-circle"><span class="score-num">${score}</span><span class="score-total">of ${total}</span></div>
+    <div style="margin-bottom:.5rem"><span class="tag ${pass?'tag-pass':'tag-fail'}">${pass?'✓ Passed':'✗ Not passed'}</span></div>
+    <div class="result-title">${p}% correct answers</div>
+    <div class="result-sub">${msg}</div>
+    <div class="cats">${catsHTML}</div>
+    <div style="display:flex;gap:.6rem;justify-content:center;flex-wrap:wrap">
+      <button class="btn btn-primary" onclick="startExam()">Retake exam</button>
+      <button class="btn btn-secondary" onclick="reviewAnswers()">Review answers</button>
+    </div>
+    ${WEBHOOK_URL?`<div class="webhook-note" id="webhookStatus">Sending results...</div>`:''}
+  </div>`;
+
+  if(WEBHOOK_URL) logResult(sectionScores,p,pass,dateStr,elapsed);
+}
+
+function printResult(){
+  const card=document.getElementById('resultCard');
+  const html=`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>Exam Result – ${state.name||'Brannelement'}</title>
+  <style>
+    body{font-family:system-ui,sans-serif;background:#fff;color:#1a1a1a;padding:2rem;max-width:700px;margin:0 auto}
+    .header{background:#FF6B00;color:#fff;padding:1rem 1.5rem;border-radius:8px;margin-bottom:1.5rem}
+    .logo{font-size:1.2rem;font-weight:700} .sub{font-size:.8rem;opacity:.85}
+    .badge{display:inline-block;background:#fff3ec;color:#c44d00;border:1px solid #ffd5b8;border-radius:6px;font-size:.7rem;font-weight:600;padding:3px 8px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:.75rem}
+    .circle{width:110px;height:110px;border-radius:50%;background:#FF6B00;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;margin:0 auto 1rem}
+    .num{font-size:2rem;font-weight:700;line-height:1} .tot{font-size:.75rem;opacity:.8}
+    .name{font-size:1rem;color:#FF6B00;font-weight:500;margin-bottom:.2rem;text-align:center}
+    .date{font-size:.75rem;color:#aaa;text-align:center;margin-bottom:.75rem}
+    .tag{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.72rem;font-weight:600}
+    .pass{background:#eaf7ee;color:#2d9e5e} .fail{background:#fdecea;color:#d94f4f}
+    .title{font-size:1.1rem;font-weight:600;margin:.4rem 0} .sub2{color:#666;font-size:.85rem;margin-bottom:1rem}
+    .cats{display:grid;grid-template-columns:repeat(2,1fr);gap:.5rem;margin-bottom:1rem}
+    .cat{background:#fafaf8;border:1px solid #e0e0da;border-radius:8px;padding:.6rem .8rem}
+    .cname{font-size:.7rem;color:#888;margin-bottom:.2rem}
+    .cscore{font-size:.9rem;font-weight:600}
+    .bar-bg{height:4px;background:#f0ede8;border-radius:2px;margin-top:.3rem}
+    .bar{height:100%;background:#FF6B00;border-radius:2px}
+    @media print{body{padding:1rem}}
+  </style></head><body>
+  <div class="header"><div class="logo">Brannelement</div><div class="sub">Internal Certification Prep · Panoramic Power</div></div>
+  ${card.innerHTML.replace(/<button[^>]*>[\s\S]*?<\/button>/g,'').replace(/id="webhookStatus"[\s\S]*?<\/div>/,'')}
+  </body></html>`;
+
+  const w=window.open('','_blank','width=800,height=600');
+  w.document.write(html);
+  w.document.close();
+  w.onload=()=>{ w.focus(); w.print(); };
+}
+
+function logResult(sectionScores,p,pass,dateStr,elapsed){
+  const payload={name:state.name||'(anonymous)',date:dateStr,score:state.score,total:state.qs.length,percentage:p,passed:pass,elapsed_min:elapsed,sections:sectionScores.map(s=>({section:s.name,correct:s.correct,total:s.total,pct:pct(s.correct,s.total)}))};
+  fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)})
+    .then(()=>{const el=document.getElementById('webhookStatus');if(el)el.textContent='Result saved ✓';})
+    .catch(()=>{const el=document.getElementById('webhookStatus');if(el)el.textContent='Could not save result (check webhook URL).';});
+}
+
+function startExam(){
+  const f=document.getElementById('nameField');
+  const name=f?f.value.trim():'';
+  if(!name){if(f){f.style.borderColor='#d94f4f';f.placeholder='Please enter your name to continue';}return;}
+  state={screen:'exam',current:0,selected:null,revealed:false,answers:[],score:0,name,startTime:Date.now(),qs:shuffleQuestions()};
+  render();
+}
+
+function selectOpt(i){if(state.revealed)return;state.selected=i;render();}
+
+function checkAnswer(){
+  if(state.selected===null)return;
+  state.revealed=true;
+  state.answers[state.current]=state.selected;
+  if(state.selected===state.qs[state.current].answer)state.score++;
+  render();
+}
+
+function nextQuestion(){
+  if(state.current===state.qs.length-1){state.screen='result';}
+  else{state.current++;state.selected=null;state.revealed=false;}
+  render();
+}
+
+function reviewAnswers(){
+  state.screen='exam';state.current=0;state.selected=state.answers[0];state.revealed=true;
+  renderReview();
+}
+
+function renderReview(){
+  const app=document.getElementById('app');
+  const q=state.qs[state.current];
+  const total=state.qs.length;
+  const letters=['A','B','C','D'];
+  const userAns=state.answers[state.current];
+  const correct=userAns===q.answer;
+  const optsHTML=q.opts.map((o,i)=>{
+    let cls='opt';
+    if(i===q.answer) cls+=' revealed-correct';
+    else if(i===userAns&&i!==q.answer) cls+=' incorrect';
+    return `<div class="${cls}"><span class="opt-letter">${letters[i]}</span><span>${o}</span></div>`;
+  }).join('');
+  app.innerHTML=`
+  <div class="progress-wrap">
+    <div class="progress-bar-bg"><div class="progress-bar" style="width:${pct(state.current+1,total)}%"></div></div>
+    <span class="progress-label">Review ${state.current+1}/${total}</span>
+  </div>
+  <div class="card">
+    <div class="section-badge">${q.section}</div>
+    <div class="q-num">Question ${state.current+1}</div>
+    <div class="q-text">${q.q}</div>
+    <span class="tag ${correct?'tag-pass':'tag-fail'}" style="margin-bottom:.75rem;display:inline-block">${correct?'✓ Correct':'✗ Incorrect'}</span>
+    <div class="options">${optsHTML}</div>
+    <div class="explanation"><strong>Explanation:</strong> ${q.exp}</div>
+    <div class="nav">
+      <button class="btn btn-secondary" onclick="prevReview()" ${state.current===0?'disabled':''}>← Previous</button>
+      ${state.current<total-1?`<button class="btn btn-primary" onclick="nextReview()">Next →</button>`:`<button class="btn btn-primary" onclick="backToResult()">See result</button>`}
+    </div>
+  </div>`;
+}
+
+function nextReview(){state.current++;state.selected=state.answers[state.current];renderReview();}
+function prevReview(){state.current--;state.selected=state.answers[state.current];renderReview();}
+function backToResult(){state.screen='result';render();}
+
+render();
+</script>
+</body>
+</html>
