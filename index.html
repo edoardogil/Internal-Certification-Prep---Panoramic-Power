@@ -216,7 +216,7 @@ function logResult(sectionScores,p,pass,dateStr,elapsed){
     total:state.qs.length,percentage:p,passed:pass,elapsed_min:elapsed,
     sections:sectionScores.map(s=>({section:s.name,correct:s.correct,total:s.total,pct:pct(s.correct,s.total)}))
   };
-  fetch(WEBHOOK_URL,{method:'POST',body:JSON.stringify(payload)})
+  fetch(WEBHOOK_URL,{method:'POST',body:JSON.stringify(payload),redirect:'follow'})
     .then(r=>r.json())
     .then(()=>{const el=document.getElementById('webhookStatus');if(el)el.textContent='Result saved ✓';})
     .catch(()=>{const el=document.getElementById('webhookStatus');if(el)el.textContent='Could not save result (check webhook URL).';});
